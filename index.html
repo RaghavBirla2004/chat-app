@@ -1,74 +1,55 @@
 <html>
 <head>
-    <title>Web socket using Node js</title>
+    <title>Chatting Messenger</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
+<body class="bg-blue-100">
+    <h1 class="font-bold text-blue-500 text-3xl text-center mt-5">Chatting Messenger</h1>
 
-<body>
-    <h1 style="margin-left: 30px;margin-top:20px;color:red">Created by Rohit,Rinkesh</h1>
-    <h1 class="font-bold text-green-500 
-               text-3xl text-center mt-5">
-         Chat App
-      </h1>
-    <div>
-        <h2 class="font-semibold text-xl 
-                   text-center mt-5" 
-            id="logo">
-              Chat App using web socket and node js
-          </h2>
-    </div>
-    <form class="flex flex-col justify-center 
-                 items-center mt-5" 
-          id="form">
-        <input class="border border-gray-400 
-                      rounded-md mt-5 p-1" 
-               type="text" 
-               placeholder="Name" 
-               id="myname">
-        <input class="border border-gray-400 
-                      rounded-md mt-5 p-1" 
-               type="text" 
-               placeholder="Message" 
-               id="message">
-        <button class="bg-blue-500 rounded-md p-2 
-                       text-white mt-5">
-              Send
-          </button>
+    <div class="text-center mt-3 text-xl font-semibold text-blue-700">Chatting Messenger using WebSocket and Node.js</div>
+
+    <form class="flex flex-col items-center mt-5" id="form">
+        <input class="border border-blue-400 rounded-md mt-2 p-2 w-1/3" type="text" placeholder="Name" id="myname">
+        <input class="border border-blue-400 rounded-md mt-2 p-2 w-1/3" type="text" placeholder="Message" id="message">
+        <button class="bg-green-500 hover:bg-green-600 text-white font-bold rounded-md p-2 mt-3 w-1/3">Send</button>
     </form>
-    <div class="flex flex-col justify-center 
-                items-center mt-5" 
-         id="messageArea">
-    </div>
-</body>
-<script src="/socket.io/socket.io.js"></script>
-<script>
-    let socket = io();
-    let form = document.getElementById('form');
-    let myname = document.getElementById('myname');
-    let message = document.getElementById('message');
-    let messageArea = document.getElementById("messageArea");
-    form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        if (message.value) {
-            socket.emit('send name', myname.value);
-            socket.emit('send message', message.value);
-            message.value = "";
-        }
-    });
-    socket.on("send name", (username) => {
-        let name = document.createElement("p");
-        name.style.backgroundColor = "grey";
-        name.style.width = "100%";
-        name.style.textAlign = "center";
-        name.style.color = "white";
-        name.textContent = username + ":";
-        messageArea.appendChild(name);
-    });
-    socket.on("send message", (chat) => {
-        let chatContent = document.createElement("p");
-        chatContent.textContent = chat;
-        messageArea.appendChild(chatContent);
-    });
-</script>
 
+    <div class="flex flex-col items-center mt-5" id="messageArea"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        let socket = io();
+        let form = document.getElementById("form");
+        let myname = document.getElementById("myname");
+        let message = document.getElementById("message");
+        let messageArea = document.getElementById("messageArea");
+
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+            if (message.value.trim() && myname.value.trim()) {
+                socket.emit("send message", {
+                    username: myname.value.trim(),
+                    chat: message.value.trim()
+                });
+                message.value = "";
+            }
+        });
+
+        socket.on("send message", (data) => {
+            let chatBox = document.createElement("div");
+            chatBox.classList.add("bg-blue-200", "p-2", "rounded-lg", "my-2", "w-1/3", "text-center");
+
+            let name = document.createElement("p");
+            name.classList.add("font-bold", "text-blue-800");
+            name.textContent = data.username + ":";
+
+            let chatContent = document.createElement("p");
+            chatContent.textContent = data.chat;
+
+            chatBox.appendChild(name);
+            chatBox.appendChild(chatContent);
+            messageArea.appendChild(chatBox);
+        });
+    </script>
+</body>
 </html>
